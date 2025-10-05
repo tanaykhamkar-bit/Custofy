@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custofy - Admin Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0a0a0a;
+            color: #ffffff;
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+        }
+
+        .admin-badge {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            padding: 0.6rem 1.5rem;
+            background: transparent;
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .logout-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        /* Login Container */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-box {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            padding: 3rem;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 100%;
+            border: 2px solid #FFD700;
+        }
+
+        .login-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            background: #0a0a0a;
+            border: 1px solid #FFD700;
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            padding: 2rem 5%;
+        }
+
+        .dashboard.active {
+            display: block;
+        }
+
+        .dashboard-header {
+            margin-bottom: 3rem;
+        }
+
+        .dashboard-title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            text-align: center;
+        }
+
+        .stat-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #cccccc;
+            font-size: 1rem;
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid #FFD700;
+            color: #FFD700;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background: #FFD700;
+            color: #000;
+        }
+
+        /* Orders Section */
+        .orders-section {
+            margin-top: 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: #FFD700;
+            margin-bottom: 2rem;
+        }
+
+        .order-card {
+            background: linear-gradient(145deg, #1a1a1a, #0f0f0f);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .order-card:hover {
+            border-color: #FFD700;
+            transform: translateY(-5px);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .order-id {
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .order-date {
+            color: #cccccc;
+            margin-top: 0.3rem;
+        }
+
+        .order-status {
+            padding: 0.6rem 1.2rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: rgba(255, 165, 0, 0.2);
+            color: #FFA500;
+        }
+
+        .status-processing {
+            background: rgba(255, 215, 0, 0.2);
+            color: #FFD700;
+        }
+
+        .status-shipped {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+        }
+
+        .status-delivered {
+            background: rgba(0, 200, 0, 0.2);
+            color: #00c800;
+        }
+
+        .status-cancelled {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+        }
+
+        .customer-info {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: rgba(255, 215, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .customer-email {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .order-items {
+            margin-bottom: 1.5rem;
+        }
+
+        .order-item {
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .item-details {
+            flex: 1;
+            color: #cccccc;
+        }
+
+        .item-name {
+            color: #ffffff;
+            font-weight: bold;
+            margin-bottom: 0.3rem;
+        }
+
+        .item-price {
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .order-total {
+            text-align: right;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 215, 0, 0.2);
+            margin-bottom: 1.5rem;
+        }
+
+        .total-amount {
+            font-size: 1.8rem;
+            color: #FFD700;
+            font-weight: bold;
+        }
+
+        .order-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            flex: 1;
+            min-width: 150px;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .btn-ship {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+        }
+
+        .btn-deliver {
+            background: linear-gradient(135deg, #0088ff, #0066cc);
+            color: #fff;
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: #fff;
+        }
+
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 3000;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+            }
+            to {
+                transform: translateX(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #cccccc;
+        }
+
+        .empty-icon {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .order-header {
+                flex-direction: column;
+            }
+
+            .order-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Container -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-box">
+            <h1 class="login-title">Admin Login</h1>
+            <form onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label>Admin Email</label>
+                    <input type="email" id="adminEmail" required>
+                </div>
+                <div class="form-group">
+                    <label>Admin Password</label>
+                    <input type="password" id="adminPassword" required>
+                </div>
+                <button type="submit" class="submit-btn">Login to Dashboard</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <!-- Navbar -->
+        <nav>
+            <div class="logo">CUSTOFY ADMIN</div>
+            <div style="display: flex; gap: 1rem; align-items: center;">
+                <span class="admin-badge">Admin Panel</span>
+                <button class="logout-btn" onclick="handleLogout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="dashboard-header">
+            <h1 class="dashboard-title">Order Management Dashboard</h1>
+            <p style="color: #cccccc;">Manage and track all customer orders</p>
+        </div>
+
+        <!-- Statistics -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-value" id="totalOrders">0</div>
+                <div class="stat-label">Total Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⏳</div>
+                <div class="stat-value" id="pendingOrders">0</div>
+                <div class="stat-label">Pending Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚚</div>
+                <div class="stat-value" id="shippedOrders">0</div>
+                <div class="stat-label">Shipped Orders</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-value" id="totalRevenue">$0</div>
+                <div class="stat-label">Total Revenue</div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterOrders('all')">All Orders</button>
+            <button class="filter-btn" onclick="filterOrders('pending')">Pending</button>
+            <button class="filter-btn" onclick="filterOrders('processing')">Processing</button>
+            <button class="filter-btn" onclick="filterOrders('shipped')">Shipped</button>
+            <button class="filter-btn" onclick="filterOrders('delivered')">Delivered</button>
+        </div>
+
+        <!-- Orders Section -->
+        <div class="orders-section">
+            <h2 class="section-title">Orders</h2>
+            <div id="ordersContainer">
+                <!-- Orders will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase Configuration
+        // REPLACE WITH YOUR FIREBASE CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuzTvZeyYUfSEZUWI54TFH3dU1ZvA1Ldw",
+            authDomain: "custofy-982ca.firebaseapp.com",
+            projectId: "custofy-982ca",
+            storageBucket: "custofy-982ca.firebasestorage.app",
+            messagingSenderId: "469653593273",
+            appId: "1:469653593273:web:5316846ccbc0cd52d20f68"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Admin credentials (In production, use Firebase Admin SDK or custom claims)
+        const ADMIN_EMAIL = 'admin@custofy.com';
+        const ADMIN_PASSWORD = 'admin123'; // Change this to a secure password
+
+        let allOrders = [];
+        let currentFilter = 'all';
+
+        // Auth state observer
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.email === ADMIN_EMAIL) {
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').classList.add('active');
+                loadOrders();
+            } else {
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('dashboard').classList.remove('active');
+            }
+        });
+
+        // Handle admin login
+        window.handleAdminLogin = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (email !== ADMIN_EMAIL) {
+                showNotification('Access denied. Admin credentials required.');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showNotification('Welcome to Admin Dashboard!');
+            } catch (error) {
+                showNotification('Error: ' + error.message);
+            }
+        };
+
+        // Handle logout
+        window.handleLogout = async () => {
+            try {
+                await signOut(auth);
+                showNotification('Logged out successfully');
+            } catch (error) {
+                showNotification('Error: ' + error.message);
+            }
+        };
+
+        // Load orders with real-time updates
+        function loadOrders() {
+            const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+            
+            onSnapshot(q, (querySnapshot) => {
+                allOrders = [];
+                querySnapshot.forEach((doc) => {
+                    allOrders.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                updateStatistics();
+                displayOrders();
+            }, (error) => {
+                showNotification('Error loading orders: ' + error.message);
+            });
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const total = allOrders.length;
+            const pending = allOrders.filter(o => o.status === 'pending').length;
+            const shipped = allOrders.filter(o => o.status === 'shipped').length;
+            const revenue = allOrders.reduce((sum, order) => sum + order.total, 0);
+
+            document.getElementById('totalOrders').textContent = total;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('shippedOrders').textContent = shipped;
+            document.getElementById('totalRevenue').textContent = '$' + revenue.toFixed(2);
+        }
+
+        // Display orders
+        function displayOrders() {
+            const container = document.getElementById('ordersContainer');
+            
+            let filteredOrders = currentFilter === 'all' 
+                ? allOrders 
+                : allOrders.filter(o => o.status === currentFilter);
+
+            if (filteredOrders.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No ${currentFilter === 'all' ? '' : currentFilter} orders found</h3>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filteredOrders.map(order => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order #${order.id.substring(0, 8).toUpperCase()}</div>
+                            <div class="order-date">${new Date(order.createdAt).toLocaleString()}</div>
+                        </div>
+                        <span class="order-status status-${order.status}">${order.status.toUpperCase()}</span>
+                    </div>
+
+                    <div class="customer-info">
+                        <div class="customer-email">👤 ${order.userEmail}</div>
+                        <div style="color: #cccccc;">User ID: ${order.userId.substring(0, 8)}</div>
+                    </div>
+
+                    <div class="order-items">
+                        ${order.items.map(item => `
+                            <div class="order-item">
+                                <div class="item-details">
+                                    <div class="item-name">${item.icon} ${item.name}</div>
+                                    <div>Size: ${item.size} | Color: ${item.color} | Qty: ${item.quantity}</div>
+                                    ${item.text ? `<div>Custom Text: "${item.text}"</div>` : ''}
+                                    ${item.instructions ? `<div>Instructions: ${item.instructions}</div>` : ''}
+                                </div>
+                                <div class="item-price">$${item.totalPrice.toFixed(2)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="order-total">
+                        <span class="total-amount">Total: $${order.total.toFixed(2)}</span>
+                    </div>
+
+                    <div class="order-actions">
+                        ${order.status === 'pending' ? `
+                            <button class="action-btn btn-confirm" onclick="updateOrderStatus('${order.id}', 'processing')">
+                                ✓ Confirm Order
+                            </button>
+                            <button class="action-btn btn-cancel" onclick="updateOrderStatus('${order.id}', 'cancelled')">
+                                ✗ Cancel Order
+                            </button>
+                        ` : ''}
+                        
+                        ${order.status === 'processing' ? `
+                            <button class="action-btn btn-ship" onclick="updateOrderStatus('${order.id}', 'shipped')">
+                                🚚 Mark as Shipped
+                            </button>
+                        ` : ''}
+                        
+                        ${order.status === 'shipped' ? `
+                            <button class="action-btn btn-deliver" onclick="updateOrderStatus('${order.id}', 'delivered')">
+                                ✓ Mark as Delivered
+                            </button>
+                        ` : ''}
+                        
+                        ${order.status === 'delivered' || order.status === 'cancelled' ? `
+                            <span style="color: #cccccc; padding: 0.8rem;">Order ${order.status}</span>
+                        ` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Update order status
+        window.updateOrderStatus = async (orderId, newStatus) => {
+            try {
+                const orderRef = doc(db, 'orders', orderId);
+                await updateDoc(orderRef, {
+                    status: newStatus,
+                    updatedAt: new Date().toISOString()
+                });
+
+                const statusMessages = {
+                    processing: 'Order confirmed and is being processed',
+                    shipped: 'Order marked as shipped',
+                    delivered: 'Order marked as delivered',
+                    cancelled: 'Order has been cancelled'
+                };
+
+                showNotification(statusMessages[newStatus] || 'Order status updated');
+            } catch (error) {
+                showNotification('Error updating order: ' + error.message);
+            }
+        };
+
+        // Filter orders
+        window.filterOrders = (status) => {
+            currentFilter = status;
+            
+            // Update filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            displayOrders();
+        };
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('active');
+            setTimeout(() => {
+                notification.classList.remove('active');
+            }, 3000);
+        }
+
+        window.showNotification = showNotification;
+    </script>
+</body>
+</html>
